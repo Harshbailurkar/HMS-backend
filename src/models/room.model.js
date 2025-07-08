@@ -30,12 +30,9 @@ status: {
 type: String,
 enum: ['available', 'full', 'maintenance'],
 default: 'available'
-},
-
-createdAt: {
-type: Date,
-default: Date.now
 }
+},{
+    timestamps: true,
 });
 
 export const Room = mongoose.model('Room', roomSchema);
