@@ -1,0 +1,41 @@
+import mongoose from 'mongoose';
+
+const roomSchema = new mongoose.Schema({
+roomNumber: {
+type: String,
+required: true,
+unique: true,
+trim: true
+},
+
+type: {
+type: String,
+enum: ['single', 'double', 'triple'],
+default: 'single'
+},
+
+capacity: {
+type: Number,
+required: true
+},
+
+currentStudents: [
+{
+type: mongoose.Schema.Types.ObjectId,
+ref: 'User'
+}
+],
+
+status: {
+type: String,
+enum: ['available', 'full', 'maintenance'],
+default: 'available'
+},
+
+createdAt: {
+type: Date,
+default: Date.now
+}
+});
+
+export const Room = mongoose.model('Room', roomSchema);
