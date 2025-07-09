@@ -5,9 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "start": "node -r dotenv/config  src/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,8 +16,17 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
     "cloudinary": "^2.7.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.1.0",
+    "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mongoose": "^8.16.2",
+    "mongoose-aggregate-paginate-v2": "^1.1.4",
     "multer": "^2.0.1"
   }
 }
