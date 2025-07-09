@@ -35,7 +35,6 @@ const userSchema = new Schema(
     gender: {
       type: String,
       enum: ["male", "female", "other"],
-      required: true,
     },
 
     role: {
@@ -53,13 +52,14 @@ const userSchema = new Schema(
     messPreference: {
       type: String,
       enum: ["veg", "non-veg"],
-      default: "veg",
     },
 
     status: {
       type: String,
       enum: ["active", "inactive"],
-      default: "active",
+    },
+    refreshToken: {
+      type: String,
     },
   },
   {
