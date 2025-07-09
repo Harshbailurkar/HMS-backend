@@ -25,6 +25,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new APIError(404, "user not found");
     }
     req.user = user;
+    req.role = user.role;
     next();
   } catch (error) {
     throw new APIError(401, "Invalid Access Token");
