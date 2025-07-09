@@ -3,6 +3,8 @@ import { User } from "../../models/user.model.js";
 import { Room } from "../../models/room.model.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { APIResponse } from "../../utils/apiResponse.js";
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { DocumentUpload } from "../../models/documentUpload.model.js";
 
 const tenantRegister = asyncHandler(async (req, res) => {
   if (req.user.role !== "admin") {
@@ -10,6 +12,7 @@ const tenantRegister = asyncHandler(async (req, res) => {
   }
 
   const { name, email, password, phone, roomId, messPreference } = req.body;
+  const documentFilePath = req.file?.path;
 
   if (!name || !email || !password || !phone || !roomId || !messPreference) {
     throw new APIError(400, "All fields are required");
@@ -38,6 +41,19 @@ const tenantRegister = asyncHandler(async (req, res) => {
     status: "active",
   });
   await user.save();
+
+  if (documentFilePath) {
+    const result = await uploadOnCloudinary(documentFilePath);
+    if (result?.secure_url) {
+      await DocumentUpload.create({
+        relatedTo: user._id,
+        relatedModel: "User",
+        type: "id_proof",
+        fileUrl: result.secure_url,
+        uploadedBy: req.user._id,
+      });
+    }
+  }
 
   room.currentTenants.push(user._id);
   room.status =
@@ -202,6 +218,62 @@ const removeTenant = asyncHandler(async (req, res) => {
     .json(new APIResponse(200, null, "Tenant removed successfully"));
 });
 
+const viewTenantProfile = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(
+      403,
+      "Access denied. Only admins can view tenant profiles."
+    );
+  }
+
+  const tenantId = req.params.tenantId;
+  if (!tenantId) {
+    throw new APIError(400, "Tenant ID is required");
+  }
+
+  const tenant = await User.findById(tenantId).populate("roomId");
+
+  if (!tenant) {
+    throw new APIError(404, "Tenant not found");
+  }
+
+  const documentUploads = await DocumentUpload.find({
+    relatedTo: tenantId,
+    relatedModel: "User",
+  });
+
+  const response = {
+    _id: tenant._id,
+    name: tenant.name,
+    email: tenant.email,
+    phone: tenant.phone,
+    role: tenant.role,
+    messPreference: tenant.messPreference,
+    status: tenant.status,
+    room: tenant.roomId
+      ? {
+          roomNumber: tenant.roomId.roomNumber,
+          floor: tenant.roomId.floor,
+          capacity: tenant.roomId.capacity,
+          status: tenant.roomId.status,
+        }
+      : null,
+
+    documentUploads: documentUploads.map((doc) => ({
+      _id: doc._id,
+      type: doc.type,
+      fileUrl: doc.fileUrl,
+      uploadedAt: doc.createdAt,
+    })),
+  };
+
+  res
+    .status(200)
+    .json(
+      new APIResponse(200, response, "Tenant profile retrieved successfully")
+    );
+});
+
 export {
   tenantRegister,
   updateTenantInfo,
@@ -209,4 +281,5 @@ export {
   getAllTenants,
   getAllTenantsInRoom,
   removeTenant,
+  viewTenantProfile,
 };
