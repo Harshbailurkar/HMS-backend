@@ -17,12 +17,6 @@ const noticeSchema = new mongoose.Schema(
       enum: ["all", "students", "staff"],
       default: "all",
     },
-
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
   },
   {
     timestamps: true,
