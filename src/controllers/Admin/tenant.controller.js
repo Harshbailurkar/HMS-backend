@@ -5,6 +5,10 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { APIResponse } from "../../utils/apiResponse.js";
 
 const tenantRegister = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
+
   const { name, email, password, phone, roomId, messPreference } = req.body;
 
   if (!name || !email || !password || !phone || !roomId || !messPreference) {
@@ -58,6 +62,9 @@ const tenantRegister = asyncHandler(async (req, res) => {
 });
 
 const updateTenantInfo = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { tenantId } = req.params;
   const { messPreference, name, email, phone, roomId, password, status } =
     req.body;
@@ -114,6 +121,9 @@ const updateTenantInfo = asyncHandler(async (req, res) => {
 });
 
 const getTenantInfo = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { tenantId } = req.params;
   if (!tenantId) throw new APIError(400, "Tenant ID is required");
 
@@ -130,6 +140,10 @@ const getTenantInfo = asyncHandler(async (req, res) => {
 });
 
 const getAllTenants = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
+
   const tenants = await User.find({ role: "tenant" });
   if (!tenants || tenants.length === 0) {
     throw new APIError(404, "No tenants found");
@@ -141,6 +155,9 @@ const getAllTenants = asyncHandler(async (req, res) => {
 });
 
 const getAllTenantsInRoom = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { roomId } = req.params;
   if (!roomId) throw new APIError(400, "Room ID is required");
 
@@ -157,6 +174,9 @@ const getAllTenantsInRoom = asyncHandler(async (req, res) => {
 });
 
 const removeTenant = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { tenantId } = req.params;
   if (!tenantId) throw new APIError(400, "Tenant ID is required");
 

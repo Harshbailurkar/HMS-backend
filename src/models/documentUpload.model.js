@@ -30,6 +30,11 @@ const documentUploadSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    uploadedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,

@@ -4,6 +4,10 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import { APIResponse } from "../../utils/apiResponse";
 
 const staffRegister = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
+
   const { name, email, password, phone } = req.body;
 
   if (!name || !email || !password || !phone) {
@@ -31,6 +35,9 @@ const staffRegister = asyncHandler(async (req, res, next) => {
 });
 
 const updateStaffInfo = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { staffId } = req.params;
   const { name, email, phone, password } = req.body;
   if (!staffId) {
@@ -55,6 +62,9 @@ const updateStaffInfo = asyncHandler(async (req, res, next) => {
 });
 
 const getStaffInfo = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { staffId } = req.params;
   if (!staffId) {
     throw new APIError(400, "Staff ID is required");
@@ -71,6 +81,10 @@ const getStaffInfo = asyncHandler(async (req, res, next) => {
 });
 
 const getAllStaff = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
+
   const staff = await User.find({ role: "staff" });
   if (!staff || staff.length === 0) {
     throw new APIError(404, "No staff found");
@@ -81,6 +95,10 @@ const getAllStaff = asyncHandler(async (req, res, next) => {
 });
 
 const removeStaff = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
+
   const { staffId } = req.params;
   if (!staffId) {
     throw new APIError(400, "Staff ID is required");

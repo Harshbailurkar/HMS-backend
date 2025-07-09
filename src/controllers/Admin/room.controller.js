@@ -4,6 +4,10 @@ import { APIResponse } from "../../utils/apiResponse";
 import { APIError } from "../../utils/apiError";
 
 const addRoom = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
+
   const { roomNumber, type, capacity } = req.body;
 
   if (!roomNumber || !type || !capacity) {
@@ -29,6 +33,9 @@ const addRoom = asyncHandler(async (req, res, next) => {
 });
 
 const updateRoom = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { roomId } = req.params;
   const { roomNumber, type, capacity, status } = req.body;
 
@@ -52,6 +59,9 @@ const updateRoom = asyncHandler(async (req, res, next) => {
 });
 
 const deleteRoom = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { roomId } = req.params;
 
   const room = await Room.findById(roomId);
@@ -65,6 +75,9 @@ const deleteRoom = asyncHandler(async (req, res, next) => {
 });
 
 const getAllRooms = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const rooms = await Room.find();
   if (!rooms || rooms.length === 0) {
     throw new APIError(404, "No rooms found");
@@ -75,6 +88,9 @@ const getAllRooms = asyncHandler(async (req, res, next) => {
 });
 
 const getRoomById = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const { roomId } = req.params;
 
   const room = await Room.findById(roomId);
@@ -87,6 +103,9 @@ const getRoomById = asyncHandler(async (req, res, next) => {
 });
 
 const getAvailableRooms = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(403, "Access denied. Only admins can add rooms.");
+  }
   const rooms = await Room.find({ status: "available" });
   if (!rooms || rooms.length === 0) {
     throw new APIError(404, "No available rooms found");
