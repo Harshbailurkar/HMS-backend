@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const feedbackSchema = new mongoose.Schema(
   {
-    studentId: {
+    tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
