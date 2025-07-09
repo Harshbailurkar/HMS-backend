@@ -1,6 +1,5 @@
 import { APIError } from "../../utils/apiError";
 import { User } from "../../models/user.model";
-
 import { asyncHandler } from "../../utils/asyncHandler";
 import { APIResponse } from "../../utils/apiResponse";
 import generateAccessAndRefreshToken from "../../services/generateAccessAndRefreshToken";
