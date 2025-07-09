@@ -274,6 +274,42 @@ const viewTenantProfile = asyncHandler(async (req, res) => {
     );
 });
 
+const uploadAdditinalDocument = asyncHandler(async (req, res) => {
+  if (req.user.role !== "admin") {
+    throw new APIError(
+      403,
+      "Access denied. Only admins can upload additional documents."
+    );
+  }
+  const { tenantId } = req.params;
+  const documentFilePath = req.file?.path;
+  if (!tenantId) throw new APIError(400, "Tenant ID is required");
+  if (!documentFilePath) {
+    throw new APIError(400, "Document file is required");
+  }
+  const tenant = await User.findById(tenantId);
+  if (!tenant || tenant.role !== "tenant") {
+    throw new APIError(404, "Tenant not found");
+  }
+  const result = await uploadOnCloudinary(documentFilePath);
+  if (!result?.secure_url) {
+    throw new APIError(500, "Failed to upload document");
+  }
+  await DocumentUpload.create({
+    relatedTo: tenant._id,
+    relatedModel: "User",
+    type: "additional_document",
+    fileUrl: result.secure_url,
+    uploadedBy: req.user._id,
+  });
+
+  res
+    .status(201)
+    .json(
+      new APIResponse(201, null, "Additional document uploaded successfully")
+    );
+});
+
 export {
   tenantRegister,
   updateTenantInfo,
@@ -282,4 +318,5 @@ export {
   getAllTenantsInRoom,
   removeTenant,
   viewTenantProfile,
+  uploadAdditinalDocument,
 };
